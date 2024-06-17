@@ -60,4 +60,25 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });
     }
+
+    protected function mapMailboxRoutes()
+    {
+        Route::middleware('web')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/mailbox.php'));
+    }
+
+    public function map()
+    {
+        $this->mapApiRoutes();
+
+        $this->mapWebRoutes();
+
+        // Подключаем маршруты для почтового ящика
+        $this->mapMailboxRoutes();
+
+        // Другие маршруты...
+    }
+    
+
 }
