@@ -66,6 +66,21 @@ class TaskController extends Controller
 
         return redirect()->route('tasks.index');
     }
+
+    public function assign(Request $request, Task $task)
+    {
+        $task->assigned_to = auth()->user()->id;
+        $task->status = 'in_progress';
+        $task->save();
+
+        return redirect()->route('tasks.show', $task);
+    }
+
+    public function updateStatus(Request $request, Task $task)
+    {
+        $task->status = $request->input('status');
+        $task->save();
+
+        return redirect()->route('tasks.show', $task);
+    }
 }
-
-
