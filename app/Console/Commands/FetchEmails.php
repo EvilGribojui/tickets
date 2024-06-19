@@ -26,15 +26,22 @@ class FetchEmails extends Command
         $messages = $client->getFolder('INBOX')->messages()->unseen()->get();
 
         foreach ($messages as $message) {
-            $subject = $this->decodeMimeStr($message->getSubject());
+            $subject = $message->getSubject();
             if (empty($subject)) {
                 $subject = 'No Subject';
+            } else {
+                $subject = $this->decodeMimeStr($subject);
             }
-
             $task = new Task();
-            $task->name = $subject;
+            $task->subject = $subject;
             $task->priority = 1; // Default priority, можно настроить в зависимости от ваших требований.
-            $task->sender = $message->getFrom()[0]->mail;
+            // Убедитесь, что отправитель всегда доступен
+            $sender = $message->getFrom();
+            if (!empty($sender)) {
+                $task->sender = $sender[0]->mail;
+            } else {
+                $task->sender = 'Unknown Sender';
+            }
 
             // Преобразуем getCc() в массив
             $ccRecipients = $message->getCc();

@@ -17,7 +17,6 @@ class Task extends Model
         'attachments', 
         'status', 
         'assigned_to', 
-        'name', 
         'priority'
     ];
 
