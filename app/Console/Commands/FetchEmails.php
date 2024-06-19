@@ -64,8 +64,8 @@ class FetchEmails extends Command
             $task->save();
 
             // Пометить письмо как прочитанное и переместить в другую папку
-            $message->setFlag(['Seen']);
-            $message->moveToFolder('Processed');
+            //$message->setFlag(['Seen']);
+            //$message->moveToFolder('Processed');
         }
 
         $client->disconnect();
