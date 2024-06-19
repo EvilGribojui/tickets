@@ -16,12 +16,22 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('priority')->default(1);
+            $table->string('subject'); // Тема письма
+            $table->string('sender'); // Отправитель
+            $table->json('recipients')->nullable(); // Адресаты в копии
+            $table->text('body'); // Тело письма
+            $table->json('attachments')->nullable(); // Вложения
+            $table->enum('status', ['new', 'in_progress', 'on_hold', 'closed'])->default('new'); // Статус заявки
+            $table->unsignedBigInteger('assigned_to')->nullable(); // Ответственный
+            $table->string('name'); // Поле name из оригинальной миграции
+            $table->integer('priority')->default(1); // Поле priority из оригинальной миграции
             $table->timestamps();
+
+            // Добавление внешнего ключа
+            $table->foreign('assigned_to')->references('id')->on('users')->onDelete('set null');
         });
 
-        // Добавление проверки
+        // Добавление проверки для поля priority
         DB::statement('ALTER TABLE tasks ADD CONSTRAINT check_priority CHECK (priority BETWEEN 1 AND 5)');
     }
 

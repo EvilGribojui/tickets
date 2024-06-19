@@ -10,15 +10,15 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 
-        'priority', 
         'subject', 
         'sender', 
-        'body', 
         'recipients', 
+        'body', 
         'attachments', 
-        'assigned_user_id', 
-        'status'
+        'status', 
+        'assigned_to', 
+        'name', 
+        'priority'
     ];
 
     protected $casts = [
@@ -26,9 +26,8 @@ class Task extends Model
         'attachments' => 'array',
     ];
 
-    public function assignedUser()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'assigned_user_id');
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 }
-
