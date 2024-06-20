@@ -23,18 +23,28 @@ class FetchEmails extends Command
         $client->connect();
 
         /* @var MessageCollection $messages */
-        $messages = $client->getFolder('INBOX')->messages()->unseen()->get();
+        $messages = $client->getFolder('INBOX')->messages()->since('yesterday')->get();
 
         foreach ($messages as $message) {
+            $uid = $message->getUid();
+
+            // Проверка на наличие письма в базе данных
+            if (Task::where('uid', $uid)->exists()) {
+                continue; // Пропустить обработку, если письмо уже есть в базе данных
+            }
+
             $subject = $message->getSubject();
             if (empty($subject)) {
                 $subject = 'No Subject';
             } else {
                 $subject = $this->decodeMimeStr($subject);
             }
+
             $task = new Task();
+            $task->uid = $uid; // Сохранить UID письма
             $task->subject = $subject;
             $task->priority = 1; // Default priority, можно настроить в зависимости от ваших требований.
+            
             // Убедитесь, что отправитель всегда доступен
             $sender = $message->getFrom();
             if (!empty($sender)) {
@@ -51,7 +61,8 @@ class FetchEmails extends Command
             }
             $task->recipients = json_encode($ccRecipientsArray);
 
-            $task->body = $message->getHTMLBody();
+            //$task->body = $message->getHTMLBody(); // Попадает только HTML-тело, неподходит
+            $task->body = $message->getTextBody();
 
             // Преобразуем getAttachments() в массив
             $attachments = $message->getAttachments();
