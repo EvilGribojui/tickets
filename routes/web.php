@@ -25,7 +25,14 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
-Route::resource('tasks', TaskController::class)->middleware('auth');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
+    Route::post('/tasks/{task}/assign', [TaskController::class, 'assign'])->name('tasks.assign');
+    Route::post('/tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
+    Route::post('/tasks/{task}/reply', [TaskController::class, 'reply'])->name('tasks.reply');
+});
+
 
 //Auth::routes(); //Закомментил т.к. подозреваю, что эта часть не нужна и авторизация будет идти через auth.php
 
