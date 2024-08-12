@@ -1,8 +1,10 @@
 # Используем официальный образ PHP с поддержкой FPM
 FROM php:8.3-fpm
 
-# Устанавливаем необходимые расширения PHP
-RUN docker-php-ext-install pgsql pdo pdo_pgsql
+# Устанавливаем зависимости для сборки PostgreSQL расширений
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    && docker-php-ext-install pgsql pdo_pgsql
 
 # Устанавливаем рабочую директорию
 WORKDIR /var/www/html
